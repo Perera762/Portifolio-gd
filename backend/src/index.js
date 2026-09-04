@@ -9,6 +9,7 @@ import { hitLimit } from "./rateLimit.js";
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
 const startedAt = Date.now();
+const allowedOrigin = process.env.FRONTEND_URL || process.env.VERCEL_URL;
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "32kb" }));
@@ -16,6 +17,15 @@ app.use(express.json({ limit: "32kb" }));
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  if (allowedOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigin.startsWith("http") ? allowedOrigin : `https://${allowedOrigin}`);
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Admin-Token");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  }
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
   next();
 });
 
@@ -133,6 +143,11 @@ app.use((err, _req, res, _next) => {
 });
 
 const server = http.createServer(app);
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`gdias-api listening on ${PORT}`);
-});
+
+if (!process.env.VERCEL) {
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`gdias-api listening on ${PORT}`);
+  });
+}
+
+export default app;

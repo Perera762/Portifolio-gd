@@ -95,9 +95,11 @@ export const fallbackProfile = {
   },
 };
 
+const apiUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
 export async function fetchProfile() {
   try {
-    const res = await fetch("/api/profile");
+    const res = await fetch(`${apiUrl}/api/profile`);
     if (!res.ok) throw new Error("bad status");
     const json = await res.json();
     if (json?.ok && json.data) return json.data;
@@ -108,7 +110,7 @@ export async function fetchProfile() {
 }
 
 export async function sendContact(payload) {
-  const res = await fetch("/api/contact", {
+  const res = await fetch(`${apiUrl}/api/contact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
