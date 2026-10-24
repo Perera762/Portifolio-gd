@@ -2,8 +2,13 @@
   "name": "gdias-portfolio",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "bash start.sh",
-    "start": "bash start.sh"
+    "start": "bash start.sh",
+    "test": "npm run test:backend && npm run test:e2e",
+    "test:backend": "npm test --prefix backend",
+    "test:e2e": "node tests/e2e/awt-runner.js",
+    "build:frontend": "npm run build --prefix frontend"
   }
 }

@@ -929,3 +929,155 @@ footer.site-foot {
     transform: none;
   }
 }
+
+/* WhatsApp Integrations - Site Palette & Aesthetic */
+@keyframes waPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 26, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 106, 26, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 26, 0);
+  }
+}
+
+.contact-link-wa {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--line) !important;
+  padding-bottom: 6px !important;
+  transition: all 0.2s ease;
+}
+
+.contact-link-wa .wa-chip {
+  font-size: 10px;
+  padding: 3px 8px;
+  background: rgba(255, 106, 26, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(255, 106, 26, 0.35);
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.contact-link-wa .wa-number {
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+.contact-link-wa .arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.contact-link-wa:hover {
+  color: var(--accent) !important;
+  border-bottom-color: var(--accent) !important;
+  transform: translateX(4px);
+}
+
+.contact-link-wa:hover .wa-number,
+.contact-link-wa:hover .arrow {
+  color: var(--accent);
+}
+
+.contact-link-wa:hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Floating WhatsApp Badge */
+.floating-wa {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(19, 19, 21, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--ink);
+  padding: 12px 20px;
+  border: 1px solid rgba(245, 243, 238, 0.14);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.75), 0 0 1px 1px rgba(255, 255, 255, 0.04);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-wa-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: waPulse 2.2s infinite ease-out;
+  flex-shrink: 0;
+}
+
+.floating-wa svg {
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.floating-wa-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+  transition: color 0.2s ease;
+}
+
+.floating-wa-arrow {
+  font-size: 11px;
+  color: var(--muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.floating-wa:hover {
+  background: rgba(28, 28, 33, 0.98);
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px -8px rgba(0, 0, 0, 0.85), 0 0 24px rgba(255, 106, 26, 0.28);
+}
+
+.floating-wa:hover .floating-wa-text {
+  color: #ffffff;
+}
+
+.floating-wa:hover svg {
+  transform: scale(1.08);
+}
+
+.floating-wa:hover .floating-wa-arrow {
+  color: var(--accent);
+  transform: translate(2px, -2px);
+}
+
+@media (max-width: 600px) {
+  .floating-wa {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .floating-wa-text {
+    display: none;
+  }
+  .floating-wa-arrow {
+    display: none;
+  }
+}
+
+

@@ -1,0 +1,69 @@
+schema_version: "awt/v1"
+suite: "Contact Interaction & E2E Validation"
+target:
+  url: "http://localhost:5173/"
+  platform: "react"
+  app_name: "gdias-portfolio"
+
+scenarios:
+  - id: "SCN-03"
+    name: "Contact Form Validation - Required Fields"
+    description: "Ensure validation triggers when invalid or short message is submitted."
+    steps:
+      - action: "navigate"
+        target: "/"
+
+      - action: "scroll_to"
+        selector: "form.form"
+
+      - action: "input"
+        selector: "#name"
+        value: "Gustavo Test"
+
+      - action: "input"
+        selector: "#email"
+        value: "email-invalido"
+
+      - action: "input"
+        selector: "#message"
+        value: "Muito curto"
+
+      - action: "click"
+        selector: "button.submit"
+
+      - action: "assert_visual_feedback"
+        selector: ".err"
+        expected_text:
+          - "Informe um e-mail válido."
+          - "A mensagem precisa ter pelo menos 20 caracteres."
+
+  - id: "SCN-04"
+    name: "Contact Form Submission - Success Flow"
+    description: "Submit valid contact form and verify ticket generation protocol."
+    steps:
+      - action: "input"
+        selector: "#name"
+        value: "Maria Santos"
+
+      - action: "input"
+        selector: "#email"
+        value: "maria.santos@consultoria.com.br"
+
+      - action: "input"
+        selector: "#message"
+        value: "Olá Gustavo! Gostaríamos de conversar sobre uma vaga e oportunidades em QA e Front-end."
+
+      - action: "click"
+        selector: "button.submit"
+
+      - action: "wait_for_element"
+        selector: ".form-ok"
+        timeout_ms: 5000
+
+      - action: "assert_element"
+        selector: ".form-ok"
+        contains:
+          - "Mensagem recebida"
+          - "Protocolo"
+          - "GD-"
+          - "Gustavo responde em breve."

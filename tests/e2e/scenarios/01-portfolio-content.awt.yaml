@@ -1,0 +1,54 @@
+schema_version: "awt/v1"
+suite: "Portfolio Core Journey"
+target:
+  url: "http://localhost:5173/"
+  platform: "react"
+  app_name: "gdias-portfolio"
+
+scenarios:
+  - id: "SCN-01"
+    name: "Hero Section & Identity Verification"
+    description: "Verify that portfolio loads successfully and displays branding, name, role and coordinates."
+    viewport:
+      width: 1280
+      height: 800
+    steps:
+      - action: "navigate"
+        target: "/"
+        expected_status: 200
+
+      - action: "assert_title"
+        contains: "Gustavo Pereira Dias"
+
+      - action: "assert_element"
+        selector: "header, .hero, .identity"
+        contains:
+          - "Gustavo Pereira Dias"
+          - "Front-End & QA Tester"
+
+      - action: "assert_tags"
+        items:
+          - "CAMPO"
+          - "CÓDIGO"
+          - "DESIGN"
+          - "DETALHE"
+
+  - id: "SCN-02"
+    name: "Content Sections & Projects Gallery"
+    description: "Validate presence of About, Skills, Experience and Projects showcase."
+    steps:
+      - action: "scroll_to"
+        section: "projects"
+
+      - action: "assert_element"
+        selector: ".project-card, .projects"
+        contains:
+          - "Agendar Consulta Online"
+
+      - action: "assert_element"
+        selector: ".skills, #skills"
+        contains:
+          - "Front-End"
+          - "Hardware & Infra"
+          - "Lógica & Backend"
+          - "Segurança"

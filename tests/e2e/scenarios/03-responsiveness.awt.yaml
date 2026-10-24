@@ -1,0 +1,34 @@
+schema_version: "awt/v1"
+suite: "Responsive Design & Layout Quality"
+target:
+  url: "http://localhost:5173/"
+  platform: "react"
+  app_name: "gdias-portfolio"
+
+scenarios:
+  - id: "SCN-05"
+    name: "Mobile Viewport Check (375x812)"
+    viewport:
+      width: 375
+      height: 812
+      device_scale_factor: 3
+      is_mobile: true
+    steps:
+      - action: "navigate"
+        target: "/"
+      - action: "assert_no_horizontal_overflow"
+      - action: "assert_visibility"
+        selectors:
+          - "header"
+          - "form.form"
+          - ".projects, .project-card"
+
+  - id: "SCN-06"
+    name: "Desktop Ultra-Wide Viewport Check (1920x1080)"
+    viewport:
+      width: 1920
+      height: 1080
+    steps:
+      - action: "navigate"
+        target: "/"
+      - action: "assert_no_horizontal_overflow"

@@ -1,0 +1,87 @@
+{
+  "suite": "AWT Portfolio Verification",
+  "platform": "react",
+  "timestamp": "2026-10-24T03:39:10.440Z",
+  "scenarios": [
+    {
+      "scenarioId": "SCN-01",
+      "name": "Page Load & Root HTML Structure",
+      "status": "PASS",
+      "details": {
+        "status": 200
+      },
+      "timestamp": "2026-10-24T03:39:10.533Z"
+    },
+    {
+      "scenarioId": "SCN-02",
+      "name": "Vite API Proxy Connectivity (/api/health)",
+      "status": "PASS",
+      "details": {
+        "ok": true,
+        "service": "gdias-api",
+        "uptimeSec": 519,
+        "time": "2026-10-24T03:39:10.533Z"
+      },
+      "timestamp": "2026-10-24T03:39:10.542Z"
+    },
+    {
+      "scenarioId": "SCN-03",
+      "name": "Profile & Identity Verification",
+      "status": "PASS",
+      "details": {
+        "name": "Gustavo Pereira Dias",
+        "role": "Front-End & QA Tester",
+        "skillsCount": 4,
+        "projectsCount": 1
+      },
+      "timestamp": "2026-10-24T03:39:10.548Z"
+    },
+    {
+      "scenarioId": "SCN-04",
+      "name": "Projects Showcase Data Integrity",
+      "status": "PASS",
+      "details": {
+        "projectCount": 1,
+        "featured": "Agendar Consulta Online"
+      },
+      "timestamp": "2026-10-24T03:39:10.556Z"
+    },
+    {
+      "scenarioId": "SCN-05",
+      "name": "Contact Form Validation Rules (422 Rejection)",
+      "status": "PASS",
+      "details": {
+        "errors": {
+          "name": "Informe um nome válido (2 a 80 caracteres).",
+          "email": "Informe um e-mail válido.",
+          "message": "A mensagem precisa ter pelo menos 20 caracteres."
+        }
+      },
+      "timestamp": "2026-10-24T03:39:10.573Z"
+    },
+    {
+      "scenarioId": "SCN-06",
+      "name": "Contact Form Successful Submission & Ticket Generation",
+      "status": "PASS",
+      "details": {
+        "ticket": "GD-86CB06E7",
+        "receivedAt": "2026-10-24T03:39:10.578Z"
+      },
+      "timestamp": "2026-10-24T03:39:13.358Z"
+    },
+    {
+      "scenarioId": "SCN-07",
+      "name": "Anti-Spam Honeypot Trapping",
+      "status": "PASS",
+      "details": {
+        "mockTicket": "GD-F8E100"
+      },
+      "timestamp": "2026-10-24T03:39:13.373Z"
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  }
+}

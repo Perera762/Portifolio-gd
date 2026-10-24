@@ -5,6 +5,13 @@ import { profile } from "./profile.js";
 import { addMessage, listMessages, stats } from "./store.js";
 import { validateContact, clientKey } from "./validate.js";
 import { hitLimit } from "./rateLimit.js";
+import { sendNotificationEmail } from "./mailer.js";
+
+try {
+  process.loadEnvFile?.();
+} catch {
+  /* ignore if .env does not exist */
+}
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -114,12 +121,14 @@ app.post("/api/contact", async (req, res) => {
 
   try {
     await addMessage(entry);
+    const mailResult = await sendNotificationEmail(entry);
     res.status(201).json({
       ok: true,
       data: {
         ticket,
         receivedAt: entry.createdAt,
         message: "Mensagem recebida. Gustavo responde em breve.",
+        emailDispatched: mailResult.sent,
       },
     });
   } catch {
