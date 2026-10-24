@@ -1,7 +1,7 @@
 {
   "suite": "AWT Portfolio Verification",
   "platform": "react",
-  "timestamp": "2026-10-24T03:39:10.440Z",
+  "timestamp": "2026-10-24T03:52:58.961Z",
   "scenarios": [
     {
       "scenarioId": "SCN-01",
@@ -10,7 +10,7 @@
       "details": {
         "status": 200
       },
-      "timestamp": "2026-10-24T03:39:10.533Z"
+      "timestamp": "2026-10-24T03:52:59.045Z"
     },
     {
       "scenarioId": "SCN-02",
@@ -19,10 +19,10 @@
       "details": {
         "ok": true,
         "service": "gdias-api",
-        "uptimeSec": 519,
-        "time": "2026-10-24T03:39:10.533Z"
+        "uptimeSec": 32,
+        "time": "2026-10-24T03:52:59.048Z"
       },
-      "timestamp": "2026-10-24T03:39:10.542Z"
+      "timestamp": "2026-10-24T03:52:59.069Z"
     },
     {
       "scenarioId": "SCN-03",
@@ -34,7 +34,7 @@
         "skillsCount": 4,
         "projectsCount": 1
       },
-      "timestamp": "2026-10-24T03:39:10.548Z"
+      "timestamp": "2026-10-24T03:52:59.078Z"
     },
     {
       "scenarioId": "SCN-04",
@@ -44,7 +44,7 @@
         "projectCount": 1,
         "featured": "Agendar Consulta Online"
       },
-      "timestamp": "2026-10-24T03:39:10.556Z"
+      "timestamp": "2026-10-24T03:52:59.088Z"
     },
     {
       "scenarioId": "SCN-05",
@@ -57,26 +57,26 @@
           "message": "A mensagem precisa ter pelo menos 20 caracteres."
         }
       },
-      "timestamp": "2026-10-24T03:39:10.573Z"
+      "timestamp": "2026-10-24T03:52:59.130Z"
     },
     {
       "scenarioId": "SCN-06",
       "name": "Contact Form Successful Submission & Ticket Generation",
       "status": "PASS",
       "details": {
-        "ticket": "GD-86CB06E7",
-        "receivedAt": "2026-10-24T03:39:10.578Z"
+        "ticket": "GD-92140C20",
+        "receivedAt": "2026-10-24T03:52:59.135Z"
       },
-      "timestamp": "2026-10-24T03:39:13.358Z"
+      "timestamp": "2026-10-24T03:53:03.003Z"
     },
     {
       "scenarioId": "SCN-07",
       "name": "Anti-Spam Honeypot Trapping",
       "status": "PASS",
       "details": {
-        "mockTicket": "GD-F8E100"
+        "mockTicket": "GD-C11194"
       },
-      "timestamp": "2026-10-24T03:39:13.373Z"
+      "timestamp": "2026-10-24T03:53:03.018Z"
     }
   ],
   "summary": {

@@ -27,7 +27,25 @@ export function getTransporter() {
   });
 }
 
+export function escapeHtml(str) {
+  if (typeof str !== "string") return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function buildEmailContent(entry) {
+  const safeName = escapeHtml(entry.name);
+  const safeEmail = escapeHtml(entry.email);
+  const safePhone = escapeHtml(entry.phone);
+  const safeCompany = escapeHtml(entry.company);
+  const safeSubject = escapeHtml(entry.subject || "Contato pelo portfólio");
+  const safeMessage = escapeHtml(entry.message);
+  const safeTicket = escapeHtml(entry.ticket);
+
   const subject = `[Portfólio GD - ${entry.ticket}] Contato de ${entry.name}${entry.subject ? `: ${entry.subject}` : ""}`;
 
   const text = `
@@ -76,36 +94,36 @@ Para responder a este contato, basta responder diretamente a este e-mail.
 <body>
   <div class="card">
     <div class="header">
-      <span class="badge">PROTOCOLO ${entry.ticket}</span>
+      <span class="badge">PROTOCOLO ${safeTicket}</span>
       <h1 class="title">Novo Contato pelo Portfólio</h1>
       <p class="subtitle">Recebido em ${new Date(entry.createdAt).toLocaleString("pt-BR")}</p>
     </div>
     <div class="body">
       <div class="field-group">
         <div class="label">Remetente</div>
-        <div class="value"><strong>${entry.name}</strong></div>
+        <div class="value"><strong>${safeName}</strong></div>
       </div>
       <div class="field-group">
         <div class="label">E-mail</div>
-        <div class="value"><a href="mailto:${entry.email}">${entry.email}</a> (clique para responder)</div>
+        <div class="value"><a href="mailto:${safeEmail}">${safeEmail}</a> (clique para responder)</div>
       </div>
       ${entry.phone ? `
       <div class="field-group">
         <div class="label">Telefone</div>
-        <div class="value"><a href="tel:${entry.phone.replace(/[^+\d]/g, "")}">${entry.phone}</a></div>
+        <div class="value"><a href="tel:${safePhone.replace(/[^+\d]/g, "")}">${safePhone}</a></div>
       </div>` : ""}
       ${entry.company ? `
       <div class="field-group">
         <div class="label">Empresa</div>
-        <div class="value">${entry.company}</div>
+        <div class="value">${safeCompany}</div>
       </div>` : ""}
       <div class="field-group">
         <div class="label">Assunto</div>
-        <div class="value">${entry.subject || "Contato pelo portfólio"}</div>
+        <div class="value">${safeSubject}</div>
       </div>
       <div class="field-group">
         <div class="label">Mensagem</div>
-        <div class="message-box">${entry.message}</div>
+        <div class="message-box">${safeMessage}</div>
       </div>
     </div>
     <div class="footer">

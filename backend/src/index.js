@@ -18,12 +18,22 @@ const PORT = Number(process.env.PORT) || 3001;
 const startedAt = Date.now();
 const allowedOrigin = process.env.FRONTEND_URL || process.env.VERCEL_URL;
 
+function constantTimeCompare(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
 app.disable("x-powered-by");
 app.use(express.json({ limit: "32kb" }));
 
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   if (allowedOrigin) {
     res.setHeader("Access-Control-Allow-Origin", allowedOrigin.startsWith("http") ? allowedOrigin : `https://${allowedOrigin}`);
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Admin-Token");
@@ -68,7 +78,8 @@ app.get("/api/stats", async (_req, res) => {
 
 app.get("/api/messages", async (req, res) => {
   const token = req.headers["x-admin-token"];
-  if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+  const adminToken = process.env.ADMIN_TOKEN;
+  if (!adminToken || !token || !constantTimeCompare(token, adminToken)) {
     res.status(401).json({ ok: false, error: "Não autorizado." });
     return;
   }
@@ -144,6 +155,10 @@ app.use("/api", (_req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
+  if (err?.type === "entity.too.large" || err?.status === 413) {
+    res.status(413).json({ ok: false, error: "Requisição muito grande. Limite máximo de 32kb." });
+    return;
+  }
   if (err?.type === "entity.parse.failed" || err instanceof SyntaxError) {
     res.status(400).json({ ok: false, error: "JSON inválido." });
     return;
