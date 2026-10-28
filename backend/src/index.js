@@ -34,11 +34,16 @@ app.use((req, res, next) => {
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  if (allowedOrigin) {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else if (allowedOrigin) {
     res.setHeader("Access-Control-Allow-Origin", allowedOrigin.startsWith("http") ? allowedOrigin : `https://${allowedOrigin}`);
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Admin-Token");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
   }
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Admin-Token");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
@@ -132,22 +137,26 @@ app.post("/api/contact", async (req, res) => {
 
   try {
     await addMessage(entry);
-    const mailResult = await sendNotificationEmail(entry);
-    res.status(201).json({
-      ok: true,
-      data: {
-        ticket,
-        receivedAt: entry.createdAt,
-        message: "Mensagem recebida. Gustavo responde em breve.",
-        emailDispatched: mailResult.sent,
-      },
-    });
-  } catch {
-    res.status(500).json({
-      ok: false,
-      error: "Não foi possível registrar a mensagem. Tente novamente.",
-    });
+  } catch (storeErr) {
+    console.warn("[contact] Aviso ao salvar mensagem no store:", storeErr?.message);
   }
+
+  let mailResult = { sent: false };
+  try {
+    mailResult = await sendNotificationEmail(entry);
+  } catch (mailErr) {
+    console.error("[contact] Erro ao despachar email:", mailErr?.message);
+  }
+
+  res.status(201).json({
+    ok: true,
+    data: {
+      ticket,
+      receivedAt: entry.createdAt,
+      message: "Mensagem recebida. Gustavo responde em breve.",
+      emailDispatched: Boolean(mailResult?.sent),
+    },
+  });
 });
 
 app.use("/api", (_req, res) => {

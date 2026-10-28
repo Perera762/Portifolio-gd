@@ -3,37 +3,49 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.resolve(__dirname, "../data");
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY);
+const DATA_DIR = isServerless ? "/tmp" : path.resolve(__dirname, "../data");
 const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 
+const inMemoryMessages = [];
 let writeQueue = Promise.resolve();
 
 async function ensureStore() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
   try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.access(MESSAGES_FILE);
   } catch {
-    await fs.writeFile(MESSAGES_FILE, "[]\n", "utf8");
+    try {
+      await fs.writeFile(MESSAGES_FILE, "[]\n", "utf8");
+    } catch (err) {
+      // In read-only or restricted environments, suppress write failure
+    }
   }
 }
 
 async function readMessages() {
-  await ensureStore();
-  const raw = await fs.readFile(MESSAGES_FILE, "utf8");
   try {
+    await ensureStore();
+    const raw = await fs.readFile(MESSAGES_FILE, "utf8");
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    const diskList = Array.isArray(parsed) ? parsed : [];
+    const seen = new Set(diskList.map((m) => m.id));
+    return [...diskList, ...inMemoryMessages.filter((m) => !seen.has(m.id))];
   } catch {
-    return [];
+    return [...inMemoryMessages];
   }
 }
 
 async function writeMessages(messages) {
-  await ensureStore();
-  const payload = `${JSON.stringify(messages, null, 2)}\n`;
-  const tmp = `${MESSAGES_FILE}.${process.pid}.tmp`;
-  await fs.writeFile(tmp, payload, "utf8");
-  await fs.rename(tmp, MESSAGES_FILE);
+  try {
+    await ensureStore();
+    const payload = `${JSON.stringify(messages, null, 2)}\n`;
+    const tmp = `${MESSAGES_FILE}.${process.pid}.${Date.now()}.tmp`;
+    await fs.writeFile(tmp, payload, "utf8");
+    await fs.rename(tmp, MESSAGES_FILE);
+  } catch (err) {
+    console.warn("[store] Falha ao persistir em disco (ambiente read-only / serverless):", err.message);
+  }
 }
 
 export function enqueueWrite(task) {
@@ -47,8 +59,11 @@ export function enqueueWrite(task) {
 
 export async function addMessage(entry) {
   return enqueueWrite(async () => {
+    inMemoryMessages.push(entry);
     const messages = await readMessages();
-    messages.push(entry);
+    if (!messages.some((m) => m.id === entry.id)) {
+      messages.push(entry);
+    }
     await writeMessages(messages);
     return entry;
   });
@@ -71,3 +86,4 @@ export async function stats() {
     lastReceivedAt: messages.at(-1)?.createdAt ?? null,
   };
 }
+

@@ -10,20 +10,22 @@ export function getTransporter() {
     return null;
   }
 
+  const cleanPass = pass.replace(/\s+/g, "");
+
   // If host is explicitly specified, use custom SMTP server
   if (process.env.SMTP_HOST) {
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === "true" || Number(process.env.SMTP_PORT) === 465,
-      auth: { user, pass },
+      auth: { user, pass: cleanPass },
     });
   }
 
   // Default to Gmail service
   return nodemailer.createTransport({
     service: "gmail",
-    auth: { user, pass },
+    auth: { user, pass: cleanPass },
   });
 }
 
