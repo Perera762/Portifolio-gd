@@ -25,9 +25,27 @@ export default function ContactForm() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setStatus("sending");
     setErrors({});
     setFail("");
+
+    const clientErrors = {};
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      clientErrors.name = "Informe seu nome (mínimo 2 caracteres).";
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!form.email.trim() || !emailRe.test(form.email.trim())) {
+      clientErrors.email = "Informe um e-mail válido.";
+    }
+    if (!form.message.trim() || form.message.trim().length < 5) {
+      clientErrors.message = "A mensagem precisa ter pelo menos 5 caracteres.";
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
+
+    setStatus("sending");
     try {
       const data = await sendContact(form);
       setTicket(data.ticket);
@@ -36,11 +54,10 @@ export default function ContactForm() {
     } catch (err) {
       if (err.errors && Object.keys(err.errors).length) {
         setErrors(err.errors);
-        setStatus("idle");
       } else {
         setFail(err.message || "Falha ao enviar.");
-        setStatus("idle");
       }
+      setStatus("idle");
     }
   };
 

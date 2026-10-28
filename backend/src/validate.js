@@ -32,8 +32,8 @@ export function validateContact(body = {}) {
     errors.phone = "Telefone em formato inválido.";
   }
 
-  if (message.length < 20) {
-    errors.message = "A mensagem precisa ter pelo menos 20 caracteres.";
+  if (message.length < 5) {
+    errors.message = "A mensagem precisa ter pelo menos 5 caracteres.";
   } else if (message.length > 2000) {
     errors.message = "A mensagem pode ter no máximo 2000 caracteres.";
   }

@@ -77,10 +77,10 @@ describe("Unit Tests: validateContact", () => {
     assert.ok(res.errors.phone);
   });
 
-  it("should reject messages shorter than 20 characters", () => {
-    const res = validateContact({ ...validPayload, message: "Oi, tudo bem?" });
+  it("should reject messages shorter than 5 characters", () => {
+    const res = validateContact({ ...validPayload, message: "Oi" });
     assert.equal(res.ok, false);
-    assert.equal(res.errors.message, "A mensagem precisa ter pelo menos 20 caracteres.");
+    assert.equal(res.errors.message, "A mensagem precisa ter pelo menos 5 caracteres.");
   });
 
   it("should reject messages longer than 2000 characters", () => {

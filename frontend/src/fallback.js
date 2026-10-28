@@ -112,17 +112,71 @@ export async function fetchProfile() {
 }
 
 export async function sendContact(payload) {
-  const res = await fetch(`${apiUrl}/api/contact`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok || !json.ok) {
-    const err = new Error(json.error || "Falha ao enviar.");
-    err.status = res.status;
-    err.errors = json.errors || {};
-    throw err;
+  // 1. Tentar endpoint principal (/api/contact)
+  try {
+    const res = await fetch(`${apiUrl}/api/contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (res.ok && json.ok && json.data) {
+      return json.data;
+    }
+
+    if (res.status === 422) {
+      const err = new Error(json.error || "Dados inválidos.");
+      err.status = 422;
+      err.errors = json.errors || {};
+      throw err;
+    }
+
+    // Se houve erro de servidor ou rota não encontrada (ex.: 404, 500), tenta fallback
+    console.warn(`[contact] Endpoint primário retornou HTTP ${res.status}. Ativando gateway secundário resiliente.`);
+  } catch (err) {
+    if (err.status === 422 || err.errors) {
+      throw err;
+    }
+    console.warn("[contact] Falha na requisição para o endpoint primário:", err?.message);
   }
-  return json.data;
+
+  // 2. Gateway Secundário Resiliente (FormSubmit direto para pereragustavo13@gmail.com)
+  const ticket = `GD-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  try {
+    const fallbackRes = await fetch("https://formsubmit.co/ajax/pereragustavo13@gmail.com", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        _subject: `[Portfólio GD - ${ticket}] Contato de ${payload.name}${payload.subject ? `: ${payload.subject}` : ""}`,
+        _template: "table",
+        _captcha: "false",
+        Protocolo: ticket,
+        Nome: payload.name,
+        Email: payload.email,
+        Empresa: payload.company || "Não informada",
+        Telefone: payload.phone || "Não informado",
+        Assunto: payload.subject || "Contato pelo portfólio",
+        Mensagem: payload.message,
+      }),
+    });
+
+    const fbJson = await fallbackRes.json().catch(() => ({}));
+    if (fallbackRes.ok && (fbJson.success === "true" || fbJson.success === true || fbJson.ok)) {
+      return {
+        ticket,
+        receivedAt: new Date().toISOString(),
+        message: "Mensagem recebida com sucesso. Gustavo responde em breve.",
+        emailDispatched: true,
+      };
+    }
+  } catch (fbErr) {
+    console.error("[contact] Falha no gateway secundário:", fbErr);
+  }
+
+  throw new Error("Não foi possível enviar a mensagem no momento. Por favor, tente novamente ou entre em contato via WhatsApp.");
 }

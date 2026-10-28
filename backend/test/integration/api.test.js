@@ -100,7 +100,7 @@ describe("Integration Tests: Backend API", () => {
     const payload = {
       name: "X",
       email: "invalid-email",
-      message: "curto",
+      message: "oi",
     };
 
     const res = await fetch(`${baseUrl}/api/contact`, {
